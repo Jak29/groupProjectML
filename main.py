@@ -68,8 +68,8 @@ actual_prices = test_data["Close"].values
 
 total_dataset = pd.concat((data["Close"], test_data["Close"]), axis = 0)
 
-# loop from here?
-counter = 280
+
+
 model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_days:].values # Important
 model_inputs = model_inputs.reshape(-1, 1)
 model_inputs = scaler.transform(model_inputs)
@@ -80,7 +80,7 @@ for x in range(prediction_days):
     # Make Predictions on Test Data
     x_test = []
     
-    for x in range(prediction_days, len(model_inputs)):
+    for x in range(prediction_days, len(model_inputs)+1):
         x_test.append(model_inputs[x-prediction_days:x, 0])
     
     x_test = np.array(x_test)
@@ -88,16 +88,6 @@ for x in range(prediction_days):
     
     predicted_prices = model.predict(x_test)
     predicted_prices = scaler.inverse_transform(predicted_prices)
-    
-    
-    # Plot the Test Predictions
-    plt.plot(actual_prices, color="black", label=f"Actual {company} Price")
-    plt.plot(predicted_prices, color="green", label=f"Predicted {company} Price")
-    plt.title(f"{company} Share Price")
-    plt.xlabel("Days")
-    plt.ylabel(f"{company} Share Price")
-    plt.legend()
-    plt.show()
     
     
     # Predict Next Day
@@ -110,8 +100,10 @@ for x in range(prediction_days):
     prediction = scaler.inverse_transform(prediction)
     print(f"Prediction: {prediction}")
     
-
-    model_inputs = np.concatenate((model_inputs, prediction))
+    model_prediction_input = prediction
+    model_prediction_input = model_prediction_input.reshape(-1, 1)
+    model_prediction_input = scaler.transform(model_prediction_input)
+    model_inputs = np.concatenate((model_inputs, model_prediction_input))
 
 
 plt.plot(actual_prices, color="black", label=f"Actual {company} Price")
