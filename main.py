@@ -16,7 +16,7 @@ from tensorflow.keras.layers import Dense, Dropout, LSTM
 import matplotlib.pyplot as plt
 
 # Load Training Data
-company = "GOOG"
+company = "BTC-USD"
 start = dt.datetime(2015,1,1)
 end = dt.datetime(2022,1,1)
 data = web.DataReader(company, "yahoo", start, end)
@@ -53,11 +53,7 @@ model.add(Dense(units=1))
 
 
 model.compile(optimizer="adam", loss="mean_squared_error")
-model.fit(x_train, y_train, epochs=15, batch_size=32)
-
-# ========================================
-# TEST THE MODEL ACCURACY ON EXISTING DATA
-# ========================================
+model.fit(x_train, y_train, epochs=25, batch_size=64)
 
 # Load Data
 test_start = dt.datetime(2022,1,1)
@@ -74,6 +70,7 @@ model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_da
 model_inputs = model_inputs.reshape(-1, 1)
 model_inputs = scaler.transform(model_inputs)
 
+# Loop for making predictions
 for x in range(prediction_days):
     
     
@@ -91,15 +88,16 @@ for x in range(prediction_days):
     
     
     # Predict Next Day
-    
     real_data = [model_inputs[len(model_inputs) + 1 - prediction_days:len(model_inputs+1), 0]]
     real_data = np.array(real_data)
     real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
     
+    # Formatting the prediction and printing it
     prediction = model.predict(real_data)
     prediction = scaler.inverse_transform(prediction)
     print(f"Prediction: {prediction}")
     
+    # Adding the prediction back into the model for the next prediction
     model_prediction_input = prediction
     model_prediction_input = model_prediction_input.reshape(-1, 1)
     model_prediction_input = scaler.transform(model_prediction_input)
