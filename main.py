@@ -11,6 +11,8 @@ import pandas_datareader.data as web
 import datetime as dt
 from datetime import timedelta
 from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow import lite
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 import matplotlib.pyplot as plt
@@ -113,8 +115,12 @@ plt.legend()
 plt.show()
 
 
-
-
-
-
+tf.keras.models.save_model(model,"model.pbtxt")
+converter = lite.TFLiteConverter.from_keras_model(model = model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.experimental_new_converter=True
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS,
+tf.lite.OpsSet.SELECT_TF_OPS]
+model_tflite = converter.convert()
+open("BTCPrediction.tflite", "wb").write(model_tflite)
 
