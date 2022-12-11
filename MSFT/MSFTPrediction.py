@@ -18,7 +18,7 @@ from tensorflow.keras.layers import Dense, Dropout, LSTM
 import matplotlib.pyplot as plt
 
 # Load Training Data
-company = ("BTC-USD")
+company = ("MSFT")
 start = dt.datetime(2015,1,1)
 end = dt.datetime(2022,1,1)
 data = web.DataReader(company, "yahoo", start, end)
@@ -119,12 +119,12 @@ plt.legend()
 plt.show()
 
 
-tf.keras.models.save_model(model,"btc.pbtxt")
+tf.keras.models.save_model(model,"msft.pbtxt")
 converter = lite.TFLiteConverter.from_keras_model(model = model)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 converter.experimental_new_converter=True
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS,
 tf.lite.OpsSet.SELECT_TF_OPS]
 model_tflite = converter.convert()
-open("BTCPrediction.tflite", "wb").write(model_tflite)
+open("MSFTPrediction.tflite", "wb").write(model_tflite)
 
